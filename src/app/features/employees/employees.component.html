@@ -9,7 +9,7 @@
         <i class="pi pi-search"></i>
         <input type="text" placeholder="Search employees..." [(ngModel)]="searchTerm" (input)="searchEmployees()">
       </div>
-      <button class="btn btn-primary">
+      <button class="btn btn-primary" (click)="openAddEmployeeDialog()">
         <i class="pi pi-plus"></i>
         <span>Add Employee</span>
       </button>
@@ -78,13 +78,13 @@
         }
 
         <div class="employee-actions">
-          <button class="btn btn-sm" title="Edit Profile">
+          <button class="btn btn-sm" title="Edit Profile" (click)="openEditEmployeeDialog(employee)">
             <i class="pi pi-user-edit"></i>
           </button>
           <button class="btn btn-sm" title="View Schedule">
             <i class="pi pi-calendar"></i>
           </button>
-          <button class="btn btn-sm btn-danger" title="Remove Employee">
+          <button class="btn btn-sm btn-danger" title="Remove Employee" (click)="openDeleteConfirmationDialog(employee)">
             <i class="pi pi-trash"></i>
           </button>
         </div>

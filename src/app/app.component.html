@@ -1,83 +1,98 @@
-<div class="layout-wrapper">
-  <!-- Sidebar -->
-  <div class="layout-sidebar" [ngClass]="{'active': sidebarVisible}">
-    <div class="sidebar-header">
-      <div class="logo">
-        <h2>Sakai Admin</h2>
-      </div>
-      <button class="menu-toggle" (click)="toggleSidebar()">
-        <i class="pi pi-times"></i>
-      </button>
-    </div>
-    <div class="sidebar-content">
-      <ul class="menu">
-        <li class="menu-item">
-          <a routerLink="/dashboard" routerLinkActive="active">
-            <i class="pi pi-home"></i>
-            <span>Dashboard</span>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a routerLink="/employees" routerLinkActive="active">
-            <i class="pi pi-users"></i>
-            <span>Employees</span>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a>
-            <i class="pi pi-calendar"></i>
-            <span>Calendar</span>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a>
-            <i class="pi pi-chart-bar"></i>
-            <span>Analytics</span>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a>
-            <i class="pi pi-cog"></i>
-            <span>Settings</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="layout-main">
-    <!-- Topbar -->
-    <div class="topbar">
-      <div class="left">
-        <button class="toggle-sidebar" (click)="toggleSidebar()">
-          <i class="pi pi-bars"></i>
+<div class="layout-wrapper" [ngClass]="{'dark-theme': (themeService.theme$ | async) === 'dark'}">
+  <!-- Only show these components when not on auth pages -->
+  <ng-container *ngIf="!isAuthPage()">
+    <!-- Sidebar -->
+    <div class="layout-sidebar" [ngClass]="{'active': sidebarVisible}">
+      <div class="sidebar-header">
+        <div class="logo">
+          <h2>Sakai Admin</h2>
+        </div>
+        <button class="menu-toggle" (click)="toggleSidebar()">
+          <i class="pi pi-times"></i>
         </button>
-        <h2>{{getPageTitle()}}</h2>
       </div>
-      <div class="right">
-        <div class="search-box">
-          <i class="pi pi-search"></i>
-          <input type="text" placeholder="Search...">
-        </div>
-        <div class="notifications">
-          <i class="pi pi-bell"></i>
-          <span class="badge">5</span>
-        </div>
-        <div class="user-profile">
-          <div class="avatar">
-            <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Profile">
-          </div>
-          <span>Admin User</span>
-          <i class="pi pi-angle-down"></i>
-        </div>
+      <div class="sidebar-content">
+        <ul class="menu">
+          <li class="menu-item">
+            <a routerLink="/dashboard" routerLinkActive="active">
+              <i class="pi pi-home"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a routerLink="/employees" routerLinkActive="active">
+              <i class="pi pi-users"></i>
+              <span>Employees</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a>
+              <i class="pi pi-calendar"></i>
+              <span>Calendar</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a>
+              <i class="pi pi-chart-bar"></i>
+              <span>Analytics</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a>
+              <i class="pi pi-cog"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
 
-    <!-- Page Content - Router Outlet -->
-    <div class="content-wrapper">
-      <router-outlet></router-outlet>
+    <!-- Main Content with Topbar -->
+    <div class="layout-main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="left">
+          <button class="toggle-sidebar" (click)="toggleSidebar()">
+            <i class="pi pi-bars"></i>
+          </button>
+          <h2>{{getPageTitle()}}</h2>
+        </div>
+        <div class="right">
+          <div class="search-box">
+            <i class="pi pi-search"></i>
+            <input type="text" placeholder="Search...">
+          </div>
+          <div class="theme-toggle" (click)="toggleTheme()">
+            <i class="pi" [ngClass]="(themeService.theme$ | async) === 'dark' ? 'pi-sun' : 'pi-moon'"></i>
+          </div>
+          <div class="notifications">
+            <i class="pi pi-bell"></i>
+            <span class="badge">5</span>
+          </div>
+          <div class="user-profile">
+            <div class="avatar">
+              <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Profile">
+            </div>
+            <span>Admin User</span>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" (click)="logout()">
+                <i class="pi pi-sign-out"></i> Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page Content - Router Outlet -->
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
     </div>
+  </ng-container>
+
+  <!-- If on auth pages, just show the router outlet with no sidebar/topbar -->
+  <div class="auth-layout" *ngIf="isAuthPage()">
+    <router-outlet></router-outlet>
   </div>
 </div>
 
@@ -86,6 +101,11 @@
   .layout-wrapper {
     display: flex;
     min-height: 100vh;
+  }
+
+  .auth-layout {
+    width: 100%;
+    height: 100vh;
   }
 
   .layout-sidebar {
@@ -189,6 +209,12 @@
     gap: 1rem;
   }
 
+  .theme-toggle {
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--text-color-secondary);
+  }
+
   .search-box {
     position: relative;
     margin-right: 1rem;
@@ -230,7 +256,7 @@
     font-size: 0.75rem;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center.
   }
 
   .user-profile {
@@ -240,10 +266,49 @@
     padding: 0.5rem;
     border-radius: 4px;
     transition: background-color 0.2s;
+    position: relative;
   }
 
   .user-profile:hover {
     background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .user-profile:hover .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--card-background);
+    box-shadow: 0 2px 10px var(--shadow-color);
+    border-radius: 4px;
+    padding: 0.5rem 0;
+    min-width: 150px;
+    display: none;
+    z-index: 1000;
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    color: var(--text-color);
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .dropdown-item i {
+    margin-right: 0.5rem;
   }
 
   .avatar {
@@ -262,6 +327,17 @@
 
   .content-wrapper {
     padding: 1.5rem;
+  }
+
+  /* Dark Theme */
+  .dark-theme {
+    --card-background: #1e1e2d;
+    --text-color: #e0e0e0;
+    --text-color-secondary: #9e9e9e;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --border-color: #333333;
+    background-color: #121212;
+    color: var(--text-color);
   }
 
   @media (max-width: 992px) {
